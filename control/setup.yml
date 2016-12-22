@@ -1,0 +1,18 @@
+---
+- hosts: control
+  remote_user: ubuntu
+  sudo: yes
+  tasks:
+
+  - name: apt-get update
+    apt: update_cache=yes
+
+  - name: Install MPI
+    apt: name=mpich2 state=present
+
+  - name: Create MPI application directory
+    file: path=/home/cluster/bin/ state=directory owner=cluster group=cluster 
+
+  - name: Install NFS
+    apt: name=nfs-kernel-server state=present
+

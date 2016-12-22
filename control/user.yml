@@ -1,0 +1,38 @@
+---
+- hosts: control
+  remote_user: ubuntu
+  sudo: yes
+  tasks: 
+
+  - name: create cluster user
+    user: 
+      name: cluster
+      shell: /bin/bash
+      password: $6$rvH3bLwY4$0WEqNVlzQPPcn5TgaP.xLDN8Wrct9xeV7Wb1l7c1B.sYGhtjYr1MFKx1JXZMYki3s76fOWadZRKYdvBkdcosy0
+      generate_ssh_key: yes
+      ssh_key_file: .ssh/id_rsa
+ 
+  - name: grant cluster user sudo privileges
+    lineinfile: 
+      dest: /etc/sudoers
+      insertafter: '^root'
+      line: 'cluster ALL=(ALL:ALL) ALL'
+      state: present
+
+  - name: copy local key to cluster user
+    copy: 
+      src: /home/ubuntu/.ssh/id_rsa.pub
+      dest: /home/cluster/.ssh/authorized_keys
+      owner: cluster 
+      group: cluster 
+      mode: 0600
+
+  - name: copy ssh config to cluster user
+    copy: 
+      src: ../config
+      dest: /home/cluster/.ssh/config
+      owner: cluster 
+      group: cluster 
+      mode: 0600
+
+
